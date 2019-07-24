@@ -6,12 +6,13 @@ const morgan = require('morgan');
 const crypto = require('crypto');
 const axios = require('axios');
 const cors = require('cors');
+const charactersRouter = require('./routes/characters');
+const eventsRouter = require('./routes/events');
 
-const { mPublicKey, mPrivateKey } = require('./config');
-const marvelBaseUrl = 'https://gateway.marvel.com/v1/public';
 
 const app = express();
 app.use(express.json());
+app.use(cors());
     //apparently express has its own json translator
     //Lyzi said we didn't need body-parser, let's see.
     app.use((req, res, next) => {
@@ -26,6 +27,8 @@ app.use(express.static('public'));
     //server as our app.
 
 app.use(morgan('common'));
+app.use('/characters', charactersRouter);
+app.use('/events', eventsRouter);
 
 const logErrors =(err, req, res, next) =>{
     console.error(err);
@@ -82,31 +85,7 @@ app.get('/jsonResponse', (req,res) => {
     res.json({upcomingChampion: "Ryu"})
 });
 
-app.get('/marvel', (req, res) =>{
-    let timeStamp = new Date().getTime();
-    let hash = require('crypto').createHash('md5').update(timeStamp + mPrivateKey + mPublicKey).digest('hex');
-    axios({
-        url: `${marvelBaseUrl}/characters?nameStartsWith=Iron`,
-        method: "GET",
-        params:{
-            "apikey": `${mPublicKey}`,
-            "ts": `${timeStamp}`,
-            "hash": `${hash}`
-        },
-        headers: {
-            "accept": "application/json",
 
-        }
-    })
-    .then(response => {
-       res.json(response.data.data.results);
-    })
-    .catch(err => {
-        res.json(err);
-        console.error(err)
-    });
-
-})
 
 app.get('/:id', (req,res)=>{
     const {id} = req.params;
