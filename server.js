@@ -1,6 +1,7 @@
 
 'use strict'
 require('dotenv').config();
+const mongoose = require('mongoose');
 const express = require('express');
 const morgan = require('morgan');
 const crypto = require('crypto');
@@ -9,7 +10,8 @@ const cors = require('cors');
 const charactersRouter = require('./routes/characters');
 const eventsRouter = require('./routes/events');
 
-
+mongoose.Promise = global.Promise;
+const {PORT, DATABASE_URL} = require ("./config");
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -105,6 +107,50 @@ app.post("/", (req,res) => {
     .send("a okay Snake")
 })
 
-app.listen((process.env.PORT || 8000), () => {
-    console.log(`we are listening on ${process.env.PORT || 8000}`)
-}); 
+let server;
+
+function runServer(databaseUrl, port = PORT) {
+    return new Promise((resolve, reject)=>{
+        mongoose.connect(
+            databaseUrl,
+            err => {
+                if(err) {
+                    return reject(err);
+                }
+                server = app
+                .listen(port, ()=>{
+                    console.log(`your app is listening on port ${port}`);
+                    resolve();
+                })
+                .on('error', err => {
+                    mongoose.disconnect();
+                    reject(err);
+                });
+            }
+        );
+    });
+}
+
+function closeServer() {
+    return mongoose.disconnect().then(()=>{
+        return new Promise((resolve, reject) =>{
+            console.log("closing the server");
+            server.close(err => {
+                if(err) {
+                    return reject(err);
+                }
+                resolve();
+            });
+        });
+    });
+}
+
+if(require.main === module) {
+    runServer(DATABASE_URL).catch(err => console.error(err));
+}
+
+module.exports = {app, runServer, closeServer};
+
+// app.listen((process.env.PORT || 8000), () => {
+//     console.log(`we are listening on ${process.env.PORT || 8000}`)
+// }); 
