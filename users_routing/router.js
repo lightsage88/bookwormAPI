@@ -10,6 +10,7 @@ const jsonParser = bodyParser.json();
 router.use(express.json());
 
 router.post('/', jsonParser, (req,res)=>{
+    console.log('delete me');
     const requiredFields = ['username', 'password'];
     const missingField = requiredFields.find(field => !(field in req.body));
 

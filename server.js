@@ -10,6 +10,7 @@ const charactersRouter = require('./routes/characters');
 const eventsRouter = require('./routes/events');
 
 mongoose.Promise = global.Promise;
+mongoose.set('useCreateIndex', true);
 const {PORT, DATABASE_URL} = require ("./config");
 const app = express();
 app.use(express.json());
