@@ -4,9 +4,8 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const express = require('express');
 const morgan = require('morgan');
-const crypto = require('crypto');
-const axios = require('axios');
 const cors = require('cors');
+const {router: usersRouter} = require('./users_routing');
 const charactersRouter = require('./routes/characters');
 const eventsRouter = require('./routes/events');
 
@@ -29,6 +28,7 @@ app.use(express.static('public'));
     //server as our app.
 
 app.use(morgan('common'));
+app.use('/api/users', usersRouter);
 app.use('/characters', charactersRouter);
 app.use('/events', eventsRouter);
 
@@ -113,6 +113,7 @@ function runServer(databaseUrl, port = PORT) {
     return new Promise((resolve, reject)=>{
         mongoose.connect(
             databaseUrl,
+            {useNewUrlParser: true},
             err => {
                 if(err) {
                     return reject(err);
