@@ -121,4 +121,37 @@ router.get('/', (req, res)=> {
     .catch(err => res.status(500).json({message: 'Internal Server Error'}));
 });
 
+router.post('/addCharacter', (req,res)=> {
+    User.findOne({  "username": "administrator"})
+    .then(user => {
+        let characterId = req.body.characterObject.id;
+        for(let i = 0; i < user.characters.length; i++) {
+            if(characterId == user.characters[i].id) {
+                console.log('uhoh');
+                return Promise.reject({
+                    message: 'You already have this character!',
+                    code: 422,
+                    reason: "CharacterDuplicationError"
+                });
+            }
+        }
+        
+        user.characters.push(req.body.characterObject);
+        user.save();
+        return res
+        })
+        .then(res => {
+            return res.status(201).json({message: "Character Added!"})
+        })
+    
+        
+    .catch(err => {
+        console.log(err);
+        if(err.reason === "CharacterDuplicationError") {
+            return res.send(err);
+        } 
+     })
+    })
+
+
 module.exports = {router};

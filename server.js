@@ -17,12 +17,12 @@ app.use(express.json());
 app.use(cors());
     //apparently express has its own json translator
     //Lyzi said we didn't need body-parser, let's see.
-    app.use((req, res, next) => {
-        res.append('Access-Control-Allow-Origin', ['*']);
-        res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-        res.append('Access-Control-Allow-Headers', 'Content-Type');
-        next();
-    });
+    // app.use((req, res, next) => {
+    //     res.append('Access-Control-Allow-Origin', ['*']);
+    //     res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    //     res.append('Access-Control-Allow-Headers', 'Content-Type');
+    //     next();
+    // });
 app.use(express.static('public'));
     //activates static asset charing, allowing us to serve HTML
     //CSS, image, etc files from a public folder hosted on the same
@@ -30,8 +30,8 @@ app.use(express.static('public'));
 
 app.use(morgan('common'));
 app.use('/api/users', usersRouter);
-app.use('/characters', charactersRouter);
-app.use('/events', eventsRouter);
+app.use('/api/characters', charactersRouter);
+app.use('/api/events', eventsRouter);
 
 const logErrors =(err, req, res, next) =>{
     console.error(err);

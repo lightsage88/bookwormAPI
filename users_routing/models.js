@@ -26,16 +26,19 @@ const bookSchema = mongoose.Schema({
 });
 
 const characterSchema = mongoose.Schema({
-    bio: {
+    description: {
         type:String
     },
-    image: {
-        type: String
+    thumbnail: {
+        type: Object
         //img file??
     },
     name: {
         type: String,
         required: true
+    },
+    id: {
+        type: Number
     }
 });
 

@@ -29,6 +29,7 @@ router.post('/search', (req,res)=>{
         }
     })
     .then(response => {
+        console.log(response);
     res.json(response.data.data.results);
     })
     .catch(err => {
