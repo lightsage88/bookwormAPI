@@ -40,124 +40,152 @@ describe('/api/user', function(){
     });
 
     describe('api/users', function(){
-        describe('POST', function(){
-            it('Should reject users with missing username', function(){
-                return chai.request(app)
-                .post('/api/users')
-                .send({
-                    password,
-                    firstName,
-                    lastName
-                })
-                .then(() =>
-                    expect.fail(null, null,'Request should not succeed')
-                )
-                .catch(err => {
-                    if (err instanceof chai.AssertionError) {
-                    throw err;
-                    }
-                    const res = err.response;
-                    expect(res).to.have.status(422);
-                    expect(res.body.reason).to.equal('ValidationError');
-                    expect(res.body.message).to.equal('There is a field missing');
-                    expect(res.body.location).to.equal('username')
-                })
-                
-            });
+      describe('POST', function(){
+        it('Should reject users with missing username', function(){
+          return chai.request(app)
+          .post('/api/users')
+          .send({
+            password,
+            firstName,
+            lastName
+          })
+          .then(() =>
+            expect.fail(null, null,'Request should not succeed')
+          )
+          .catch(err => {
+            if (err instanceof chai.AssertionError) {
+              throw err;
+            }
+            const res = err.response;
+            expect(res).to.have.status(422);
+            expect(res.body.reason).to.equal('ValidationError');
+            expect(res.body.message).to.equal('There is a field missing');
+            expect(res.body.location).to.equal('username')
+          })
+      });
 
-            it('Should reject users with a missing password', ()=>{
-                return chai.request(app)
-                .post('/api/users')
-                .send({
-                    firstName,
-                    lastName,
-                    username
-                })
-                .then(()=> expect.fail(null, null, 'Request should not succeed'))
-                .catch(err =>{
-                    if(err instanceof chai.AssertionError){
-                        throw err;
-                    }
-                    const res = err.response;
-                    expect(res).to.have.status(422);
-                    expect(res.body.reason).to.equal('ValidationError');
-                    expect(res.body.message).to.equal("There is a field missing");
-                    expect(res.body.location).to.equal('password');
-                })
-            });
+      it('Should reject users with a missing password', ()=>{
+        return chai.request(app)
+          .post('/api/users')
+          .send({
+            firstName,
+            lastName,
+            username
+          })
+          .then(()=> expect.fail(null, null, 'Request should not succeed'))
+          .catch(err =>{
+            if(err instanceof chai.AssertionError){
+              throw err;
+            }
+            const res = err.response;
+            expect(res).to.have.status(422);
+            expect(res.body.reason).to.equal('ValidationError');
+            expect(res.body.message).to.equal("There is a field missing");
+            expect(res.body.location).to.equal('password');
+          })
+      });
 
-            it('Should reject users with a non-string for their firstName', ()=>{
-                console.log('fuckhead');
-                return chai.request(app)
-                .post('/api/users')
-                .send({
-                    firstName: 666,
-                    lastName,
-                    username,
-                    password
-                })
-                .then(()=>expect.fail(null,null, 'Request should not succeed'))
-                .catch(err => {
-                    const res = err.response;
-                    expect(res).to.have.status(422);
-                    expect(res.body.reason).to.equal('ValidationError');
-                    expect(res.body.message).to.equal('Incorrect field type: expected a string');
-                    expect(res.body.location).to.equal('firstName');
-                })
-            });
+      it('Should reject users with a non-string for their firstName', ()=>{
+        console.log('fuckhead');
+        return chai.request(app)
+        .post('/api/users')
+        .send({
+          firstName: 666,
+          lastName,
+          username,
+          password
+        })
+        .then(()=>expect.fail(null,null, 'Request should not succeed'))
+        .catch(err => {
+          const res = err.response;
+          expect(res).to.have.status(422);
+          expect(res.body.reason).to.equal('ValidationError');
+          expect(res.body.message).to.equal('Incorrect field type: expected a string');
+          expect(res.body.location).to.equal('firstName');
+        })
+      });
 
-            it('Should reject users with a non-string for their lastName', ()=>{
-                return chai.request(app)
-                .post('/api/users')
-                .send({
-                    firstName,
-                    lastName: 777,
-                    username,
-                    password
-                })
-                .then(()=> expect.fail(null, null, 'Request should not succeed'))
-                .catch(err => {
-                    const res = err.response;
-                    expect(res).to.have.status(422);
-                    expect(res.body.message).to.equal('Incorrect field type: expected a string');
-                    expect(res.body.reason).to.equal('ValidationError');
-                    expect(res.body.location).to.equal('lastName');
-                });
-            });
+      it('Should reject users with a non-string for their lastName', ()=>{
+        return chai.request(app)
+        .post('/api/users')
+        .send({
+          firstName,
+          lastName: 777,
+          username,
+          password
+        })
+        .then(()=> expect.fail(null, null, 'Request should not succeed'))
+        .catch(err => {
+          const res = err.response;
+          expect(res).to.have.status(422);
+          expect(res.body.message).to.equal('Incorrect field type: expected a string');
+          expect(res.body.reason).to.equal('ValidationError');
+          expect(res.body.location).to.equal('lastName');
         });
+      });
     });
+  });
 
-    describe('/api/users/addCharacter', ()=>{
-        it('Should add a non-present character to the Users character array', function(){
-            User.create({
-                "username": "administrator",
-                "characters": [{
-                    id: 888,
-                    name: "Hero-Person"
-                }],
-                "password": "passwordpassword",
-                "firstName": "George",
-                "lastName": "Hearn"
-            })
-            return chai.request(app)
-            .post('/api/users/addCharacter')
-            .send({
-                    characterObject: {
-                        name: "Hero-Person",
-                        id: 888
-                    } 
-            })
-            .then((response) => {
-                expect(response.body.reason).to.equal("CharacterDuplicationError");
-                expect(response.body.message).to.equal('You already have this character!');
-                expect(response.body.code).to.equal(422);
-            })
-            .catch(err => {
-                if (err instanceof chai.AssertionError) {
-                throw err;
-                }
-            })
-            
+  describe('/api/users/addCharacter', ()=>{
+    it('Should not add an already present character to the Users character array', function(){
+      User.create({
+        "username": "administrator",
+        "characters": [{
+            id: 888,
+            name: "Hero-Person"
+        }],
+        "password": "passwordpassword",
+        "firstName": "George",
+        "lastName": "Hearn"
+      })
+      return chai.request(app)
+      .post('/api/users/addCharacter')
+      .send({
+        characterObject: {
+          name: "Hero-Person",
+          id: 888
+        } 
+      })
+      .then((response) => {
+        expect(response.body.reason).to.equal("CharacterDuplicationError");
+        expect(response.body.message).to.equal('You already have this character!');
+        expect(response.body.code).to.equal(422);
+      })
+      .catch(err => {
+          if (err instanceof chai.AssertionError) {
+          throw err;
+          }
+      })
     })
+
+    it('should add a new character to the Users character array', ()=> {
+      User.create({
+        "username": "administrator",
+        "characters": [{
+            id: 888,
+            name: "Hero-Person"
+        }],
+        "password": "passwordpassword",
+        "firstName": "George",
+        "lastName": "Hearn"
+      })
+      return chai.request(app)
+      .post('/api/users/addCharacter')
+      .send({
+        characterObject: {
+          name: "Villain-Person",
+          id: 666
+        } 
+      })
+      .then((response) => {
+        expect(response.body.message).to.equal('Character Added!');
+        expect(response.res.statusCode).to.equal(201);
+      })
+      .catch(err => {
+          if (err instanceof chai.AssertionError) {
+          throw err;
+          }
+      })
     })
+  })
 })
