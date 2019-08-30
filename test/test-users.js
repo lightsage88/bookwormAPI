@@ -2,6 +2,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 
+
 const {app, runServer, closeServer} = require('../server');
 const {User} = require('../users_routing');
 
@@ -86,6 +87,7 @@ describe('/api/user', function(){
             });
 
             it('Should reject users with a non-string for their firstName', ()=>{
+                console.log('fuckhead');
                 return chai.request(app)
                 .post('/api/users')
                 .send({
@@ -122,6 +124,49 @@ describe('/api/user', function(){
                     expect(res.body.location).to.equal('lastName');
                 });
             });
-        })
+        });
+    });
+
+    describe('/api/users/addCharacter', ()=>{
+
+        
+        
+        it('Should add a non-present character to the Users character array', function(){
+            User.create({
+                "username": "administrator",
+                "characters": [{
+                    _id: 888
+                }],
+                "password": "passwordpassword",
+                "firstName": "George",
+                "lastName": "Hearn"
+            })
+            return chai.request(app)
+            .post('/api/users/addCharacter')
+            .send({
+                
+                    characterObject: {
+                        name: "Hero-Person",
+                        id: 888
+                    }
+                
+            })
+            .then((response) => {
+                console.log('jojojo');
+                console.log(response);
+                // expect.fail(null, null,'Request should not succeed')
+            })
+            .catch(err => {
+                if (err instanceof chai.AssertionError) {
+                throw err;
+                }
+                const res = err.response;
+                expect(res).to.have.status(422);
+                expect(res.body.reason).to.equal('ValidationError');
+                expect(res.body.message).to.equal('There is a field missing');
+                expect(res.body.location).to.equal('username')
+            })
+            
+    })
     })
 })

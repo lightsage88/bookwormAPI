@@ -124,31 +124,31 @@ router.get('/', (req, res)=> {
 router.post('/addCharacter', (req,res)=> {
     User.findOne({  "username": "administrator"})
     .then(user => {
-        console.log(user);
-        let characterId = req.body.characterObject.id;
-        for(let i = 0; i < user.characters.length; i++) {
-            if(characterId == user.characters[i].id) {
-                console.log('uhoh');
-                return Promise.reject({
-                    message: 'You already have this character!',
-                    code: 422,
-                    reason: "CharacterDuplicationError"
-                });
-            }
+      console.log(user);
+      let characterId = req.body.characterObject.id;
+      console.log('shitcommander');
+      for(let i = 0; i < user.characters.length; i++) {
+        if(characterId == user.characters[i].id) {
+          console.log('uhoh');
+          return Promise.reject({
+            code: 422,
+            message: 'You already have this character!',
+            reason: "CharacterDuplicationError"
+          });
         }
-        console.log('should be blocked');
-        user.characters.push(req.body.characterObject);
-        user.save();
-        return res.status(201).json({message: "Character Added!"})
-
-        })
-        .catch(err => {
-        console.log("reached err", err);
-        if(err.reason === "CharacterDuplicationError") {
-            return res.send(err);
-        } 
-     })
+      }
+      console.log('should be blocked');
+      user.characters.push(req.body.characterObject);
+      user.save();
+      return res.status(201).json({message: "Character Added!"})
     })
+    .catch(err => {
+      console.log("reached err", err);
+        if(err.reason === "CharacterDuplicationError") {
+          return res.send(err);
+        } 
+    })
+})
 
 
 module.exports = {router};
