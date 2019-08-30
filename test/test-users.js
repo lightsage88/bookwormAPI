@@ -128,14 +128,12 @@ describe('/api/user', function(){
     });
 
     describe('/api/users/addCharacter', ()=>{
-
-        
-        
         it('Should add a non-present character to the Users character array', function(){
             User.create({
                 "username": "administrator",
                 "characters": [{
-                    _id: 888
+                    id: 888,
+                    name: "Hero-Person"
                 }],
                 "password": "passwordpassword",
                 "firstName": "George",
@@ -144,27 +142,20 @@ describe('/api/user', function(){
             return chai.request(app)
             .post('/api/users/addCharacter')
             .send({
-                
                     characterObject: {
                         name: "Hero-Person",
                         id: 888
-                    }
-                
+                    } 
             })
             .then((response) => {
-                console.log('jojojo');
-                console.log(response);
-                // expect.fail(null, null,'Request should not succeed')
+                expect(response.body.reason).to.equal("CharacterDuplicationError");
+                expect(response.body.message).to.equal('You already have this character!');
+                expect(response.body.code).to.equal(422);
             })
             .catch(err => {
                 if (err instanceof chai.AssertionError) {
                 throw err;
                 }
-                const res = err.response;
-                expect(res).to.have.status(422);
-                expect(res.body.reason).to.equal('ValidationError');
-                expect(res.body.message).to.equal('There is a field missing');
-                expect(res.body.location).to.equal('username')
             })
             
     })
