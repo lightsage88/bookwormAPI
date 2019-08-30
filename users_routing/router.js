@@ -124,6 +124,7 @@ router.get('/', (req, res)=> {
 router.post('/addCharacter', (req,res)=> {
     User.findOne({  "username": "administrator"})
     .then(user => {
+        console.log(user);
         let characterId = req.body.characterObject.id;
         for(let i = 0; i < user.characters.length; i++) {
             if(characterId == user.characters[i].id) {
@@ -135,18 +136,14 @@ router.post('/addCharacter', (req,res)=> {
                 });
             }
         }
-        
+        console.log('should be blocked');
         user.characters.push(req.body.characterObject);
         user.save();
-        return res
+        return res.status(201).json({message: "Character Added!"})
+
         })
-        .then(res => {
-            return res.status(201).json({message: "Character Added!"})
-        })
-    
-        
-    .catch(err => {
-        console.log(err);
+        .catch(err => {
+        console.log("reached err", err);
         if(err.reason === "CharacterDuplicationError") {
             return res.send(err);
         } 
