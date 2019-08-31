@@ -4,6 +4,12 @@ const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
 
+const crossoverEventSchema = mongoose.Schema({
+    eventName: {
+        type: String
+    }
+})
+
 
 const bookSchema = mongoose.Schema({
     collectionName: {
@@ -28,6 +34,9 @@ const bookSchema = mongoose.Schema({
 const characterSchema = mongoose.Schema({
     description: {
         type:String
+    },
+    events: {
+      type: Object  
     },
     thumbnail: {
         type: Object
@@ -63,6 +72,7 @@ const userSchema = mongoose.Schema({
         default: ''
     },
     characters: [characterSchema],
+    crossoverEvents: [crossoverEventSchema],
     books: [bookSchema]
 
 });
@@ -73,8 +83,8 @@ userSchema.methods.serialize = function() {
         username: this.username || '',
         firstName: this.firstName || '',
         lastName: this.lastName || '',
-        characters: [],
-        books: []
+        characters: this.characters || [],
+        books: this.books || []
     };
 };
 

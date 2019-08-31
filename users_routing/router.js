@@ -143,6 +143,41 @@ router.post('/addCharacter', (req,res)=> {
           return res.send(err);
         } 
     })
+});
+
+// var array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+
+// var filtered = array.filter(function(value, index, arr){
+
+//     return value > 5;
+
+// });
+
+
+//TODO: Will need to get this to feed info from redux state on front end.
+router.post('/deleteCharacter', (req, res)=> {
+    let newUserCharacters
+    User.findOne({"username": "administrator"})
+    .then(user => {
+        let characterId = Number(req.body.characterObject.id);
+        console.log(typeof characterId);
+
+        newUserCharacters = (user.characters).filter(function(characterPerson) {
+            console.log(typeof  characterPerson.id);
+            return characterPerson.id !== characterId
+        });
+       //need to throw error if characterId to delete is not found
+       
+        console.log('gabababa');
+        console.log(newUserCharacters);
+        user.characters = newUserCharacters;
+        user.save();
+        
+        return res.status(201).json({message: "Character Removed!"});
+    })
+    .catch(err => {
+        console.error(err);
+    })
 })
 
 
