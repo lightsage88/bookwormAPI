@@ -160,20 +160,14 @@ router.post('/deleteCharacter', (req, res)=> {
     User.findOne({"username": "administrator"})
     .then(user => {
         let characterId = Number(req.body.characterObject.id);
-        console.log(typeof characterId);
-
         newUserCharacters = (user.characters).filter(function(characterPerson) {
-            console.log(typeof  characterPerson.id);
             return characterPerson.id !== characterId
         });
-       //need to throw error if characterId to delete is not found
-       
-        console.log('gabababa');
-        console.log(newUserCharacters);
+       //TODO: Stretch Goal: need to throw error if characterId to delete is not found 
+       //Though nobody can delete a character twice, so it's not super vital
         user.characters = newUserCharacters;
         user.save();
-        
-        return res.status(201).json({message: "Character Removed!"});
+        return res.status(201).json({message: "Character Removed!", characters: `${user.characters}`});
     })
     .catch(err => {
         console.error(err);

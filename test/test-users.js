@@ -181,11 +181,58 @@ describe('/api/user', function(){
         expect(response.body.message).to.equal('Character Added!');
         expect(response.res.statusCode).to.equal(201);
       })
+      
       .catch(err => {
           if (err instanceof chai.AssertionError) {
           throw err;
           }
+      });
+    });
+  });
+
+  describe('api/users/deleteCharacter', ()=> {
+    it('should delete a character', ()=> {
+      let newUserRecord;
+      User.create({
+        "username": "administrator",
+        "characters": [
+          {
+            id: 888,
+            name: "Sweeney Todd"
+          },
+          {
+            id: 616,
+            name: "Spider-Man"
+          },
+          {
+            id: 1989,
+            name: "Super Luigi"
+          }
+        ],
+        "password": "passwordpassword",
+        "firstName": "George",
+        "lastName": "Hearn"
+      });
+      return chai.request(app)
+      .post('/api/users/deleteCharacter')
+      .send({
+        characterObject: {
+          name: "Sweeney Todd",
+          id: 888
+        }
+      })
+      .then((response) => {
+        console.log(response.body);
+        expect(response.body.characters).to.not.include("id: 888");
+        expect(response.body.message).to.equal('Character Removed!');
+        expect(response.status).to.equal(201);
+        
+      })
+      .catch(err => {
+        if(err instanceof chai.AssertionError) {
+          throw err;
+        }
       })
     })
   })
-})
+});
