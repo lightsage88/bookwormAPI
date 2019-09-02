@@ -6,29 +6,25 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const {router: usersRouter} = require('./users_routing');
+const {router: authRouter} = require('./auth_routing');
 const charactersRouter = require('./routes/characters');
 const eventsRouter = require('./routes/events');
 
 mongoose.Promise = global.Promise;
 mongoose.set('useCreateIndex', true);
-const {PORT, DATABASE_URL} = require ("./config");
+const {PORT, DATABASE_URL, JWT_SECRET, JWT_EXPIRY} = require ("./config");
+
 const app = express();
 app.use(express.json());
 app.use(cors());
-    //apparently express has its own json translator
-    //Lyzi said we didn't need body-parser, let's see.
-    // app.use((req, res, next) => {
-    //     res.append('Access-Control-Allow-Origin', ['*']);
-    //     res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-    //     res.append('Access-Control-Allow-Headers', 'Content-Type');
-    //     next();
-    // });
+    
 app.use(express.static('public'));
     //activates static asset charing, allowing us to serve HTML
     //CSS, image, etc files from a public folder hosted on the same
     //server as our app.
 
 app.use(morgan('common'));
+app.use('/api/auth', authRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/characters', charactersRouter);
 app.use('/api/events', eventsRouter);
