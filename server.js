@@ -3,10 +3,11 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const express = require('express');
+const passport = require('passport');
 const morgan = require('morgan');
 const cors = require('cors');
 const {router: usersRouter} = require('./users_routing');
-const {router: authRouter} = require('./auth_routing');
+const {router: authRouter, localStrategy, jwtStrategy} = require('./auth_routing');
 const charactersRouter = require('./routes/characters');
 const eventsRouter = require('./routes/events');
 
@@ -22,7 +23,8 @@ app.use(express.static('public'));
     //activates static asset charing, allowing us to serve HTML
     //CSS, image, etc files from a public folder hosted on the same
     //server as our app.
-
+passport.use(localStrategy);
+passport.use(jwtStrategy);
 app.use(morgan('common'));
 app.use('/api/auth', authRouter);
 app.use('/api/users', usersRouter);

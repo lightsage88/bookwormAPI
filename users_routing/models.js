@@ -48,7 +48,8 @@ const characterSchema = mongoose.Schema({
     },
     id: {
         type: Number
-    }
+    },
+    image: { data: Buffer, contentType: String}
 });
 
 const userSchema = mongoose.Schema({

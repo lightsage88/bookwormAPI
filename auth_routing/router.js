@@ -19,16 +19,20 @@ router.use(bodyParser.json());
 
 //Human provides a username and password to log in
 router.post('/login', localAuth, (req,res)=> {
+    console.log('hola');
+    console.log(req.body);
+    const user = req.user.serialize()
     const authToken = createAuthToken(req.user.serialize());
-    res.json({authToken});
+    res.json({authToken, user} || err);
 });
-
 
 const jwtAuth = passport.authenticate('jwt', {session:false});
 
 //Human exchanges a valid JWT for a new one with a later expiry date
 
 router.post('/refreshToken', jwtAuth, (req,res)=>{
+    console.log('refreshToken running');
+    console.log(req);
     //I can only surmise that we do not call req.user.serialize() because that version of 'user' had already been created
     //the first go around with /login
     const authToken = createAuthToken(req.user);

@@ -1,8 +1,10 @@
 'use strict';
 const express = require('express');
 const bodyParser = require('body-parser');
+const fs = require('fs');
+const axios = require('axios');
 
-const {User} = require('./models');
+const {User, Character} = require('./models');
 
 const router = express.Router();
 
@@ -121,7 +123,31 @@ router.get('/', (req, res)=> {
     .catch(err => res.status(500).json({message: 'Internal Server Error'}));
 });
 
+const downloadImage = (url, image_path) => {
+    console.log('johnny bravo, yahaha');
+    axios({
+        url,
+        responseType: 'stream',
+    })
+    .then(response => 
+        new Promise((resolve, reject) => {
+            response.data
+            .pipe(fs.createWriteStream(image_path))
+            .on('finish', () => resolve())
+            .on('error', e=> reject(e))
+        })
+    )
+}
+
 router.post('/addCharacter', (req,res)=> {
+ let imagePath = req.body.characterObject.thumbnail.path + '.' + req.body.characterObject.thumbnail.extension;
+//  const file = `${imagePath}`;
+//  res.download(file);
+  let marvelousImage = downloadImage(imagePath, 'marvelousImage.jpg');
+  console.log('whoah');
+  console.log(marvelousImage);
+ 
+
     User.findOne({  "username": "administrator"})
     .then(user => {
       let characterId = req.body.characterObject.id;
@@ -134,15 +160,28 @@ router.post('/addCharacter', (req,res)=> {
           });
         }
       }
-      user.characters.push(req.body.characterObject);
-      user.save();
-      return res.status(201).json({message: "Character Added!"})
-    })
+      console.log(req.body.characterObject);
+      Character.create({
+          description: req.body.characterObject.description || 'bocho',
+          events: req.body.characterObject.events || 'lopo',
+          thumbnail: req.body.characterObject.thumbnail || 'goso',
+          name: req.body.characterObject.name || 'John Doe',
+          id: req.body.characterObject.id,
+          "image.data": fs.readFileSync(),
+          "image.contentType": 'image/jpeg'
+      })
+      .then(char => {
+          console.log(char);
+        user.characters.push(req.body.characterObject);
+        user.save();
+        return res.status(201).json({message: "Character Added!"})
+      })
     .catch(err => {
         if(err.reason === "CharacterDuplicationError") {
           return res.send(err);
         } 
     })
+});
 });
 
 // var array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];

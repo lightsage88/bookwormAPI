@@ -1,9 +1,12 @@
 'use strict';
+
+const { JWT_SECRET } = require('../config');
+
 //the export of 'Strategy' from passport-local will be named LocalStrategy
 const {Strategy: LocalStrategy} = require('passport-local');
-
-
-const localStrategy = new localStrategy((username, password, callback) => {
+const {Strategy: JwtStrategy, ExtractJwt} = require('passport-jwt');
+const {User} = require('../users_routing/models');
+const localStrategy = new LocalStrategy((username, password, callback) => {
     let user;
 
     User.findOne({username: username})
@@ -28,12 +31,26 @@ const localStrategy = new localStrategy((username, password, callback) => {
     })
     .catch(err => {
         if(err.reason === 'LoginError') {
+            
             return callback(null, false, err);
         }
         return callback(err, false)
     });
 });
 
+const jwtStrategy = new JwtStrategy(
+    {
+    secretOrKey: JWT_SECRET,
+        //Get the jwt by extracting it from the header, using the scheme "Bearer"
+    jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('Bearer'),
+        //Only allow HS256 encrypted tokens, the same type we use
+    algorithms: ['HS256']
+    },
+    (payload, done) => {
+        done(null, payload.user);
+    }
+);
 
-export default(localStrategy);
+
+module.exports = {localStrategy, jwtStrategy};
 
