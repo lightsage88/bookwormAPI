@@ -3,6 +3,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const axios = require('axios');
+const jwt = require('jsonwebtoken');
+const {JWT_SECRET, JWT_EXPIRY} = require ("../config");
+
 
 const {User, Character} = require('./models');
 
@@ -193,6 +196,26 @@ router.post('/addCharacter', (req,res)=> {
             res.sendStatus(500);
         }
   });
+});
+
+router.post('/refreshStateWithToken', (req,res) => {
+    console.log(req.body);
+    let token = req.body.token;
+    let username;
+    let user;
+    var decodedToken = jwt.verify(token, JWT_SECRET, (err, decoded) =>{
+        console.log(decoded.user);
+        username= decoded.user;
+    } );
+
+    User.findOne({"username":username})
+    .then(_user => {
+        user = _user;
+        res.status(201).send(user);
+    })
+    .catch(err => {
+        console.error(err);
+    });
 });
 
 

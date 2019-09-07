@@ -8,7 +8,7 @@ const {JWT_SECRET, JWT_EXPIRY} = require('../config');
 const router = express.Router();
 const createAuthToken = function(user) {
     return jwt.sign({user}, JWT_SECRET, {
-        subject: user.username,
+        subject: String(user.username),
         expiresIn: JWT_EXPIRY,
         algorithm: 'HS256'
     });
@@ -19,9 +19,12 @@ router.use(bodyParser.json());
 
 //Human provides a username and password to log in
 router.post('/login', localAuth, (req,res)=> {
+    console.log(req.user.username);
 
     const user = req.user.serialize()
-    const authToken = createAuthToken(req.user.serialize());
+    const authToken = createAuthToken(String(req.user.username));
+    console.log('goofy');
+    console.log(authToken);
     res.json({authToken, user} || err);
 });
 
