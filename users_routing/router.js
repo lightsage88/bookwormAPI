@@ -140,57 +140,61 @@ const downloadImage = (url, image_path) => {
 }
 
 router.post('/addCharacter', (req,res)=> {
+ let user;
  let imagePath = req.body.characterObject.thumbnail.path + '.' + req.body.characterObject.thumbnail.extension;
-//  const file = `${imagePath}`;
-//  res.download(file);
-  let marvelousImage = downloadImage(imagePath, 'marvelousImage.jpg');
-  console.log('whoah');
-  console.log(marvelousImage);
- 
-
-    User.findOne({  "username": "administrator"})
-    .then(user => {
-      let characterId = req.body.characterObject.id;
-      for(let i = 0; i < user.characters.length; i++) {
-        if(characterId == user.characters[i].id) {
-          return Promise.reject({
-            code: 422,
-            message: 'You already have this character!',
-            reason: "CharacterDuplicationError"
-          });
-        }
+ let superPath = './uploads/marvelousImage.jpg';
+  axios({
+      url: imagePath,
+      responseType: 'stream',
+  })
+  .then(response => {
+      return new Promise((resolve, reject) => {
+        let marvelousImage = response.data.pipe(fs.createWriteStream(superPath));
+        marvelousImage.on('error', reject).on('close', resolve);
+      })
+  })
+  .then(()=> {
+    return User.findOne({  "username": "administrator"})
+  })
+  .then(_user => {
+    user = _user;
+    let characterId = req.body.characterObject.id;
+    for(let i = 0; i < user.characters.length; i++) {
+      if(characterId == user.characters[i].id) {
+        return Promise.reject({
+          code: 422,
+          message: 'You already have this character!',
+          reason: "CharacterDuplicationError"
+        });
       }
-      console.log(req.body.characterObject);
-      Character.create({
-          description: req.body.characterObject.description || 'bocho',
-          events: req.body.characterObject.events || 'lopo',
-          thumbnail: req.body.characterObject.thumbnail || 'goso',
-          name: req.body.characterObject.name || 'John Doe',
-          id: req.body.characterObject.id,
-          "image.data": fs.readFileSync(),
-          "image.contentType": 'image/jpeg'
-      })
-      .then(char => {
-          console.log(char);
-        user.characters.push(req.body.characterObject);
-        user.save();
-        return res.status(201).json({message: "Character Added!"})
-      })
-    .catch(err => {
-        if(err.reason === "CharacterDuplicationError") {
-          return res.send(err);
-        } 
+    }
+    return Character.create({
+        description: req.body.characterObject.description || 'bocho',
+        events: req.body.characterObject.events || 'lopo',
+        thumbnail: req.body.characterObject.thumbnail || 'goso',
+        name: req.body.characterObject.name || 'John Doe',
+        id: req.body.characterObject.id,
+        "image.data": fs.readFileSync(superPath),
+        "image.contentType": 'image/jpeg'
     })
+  })
+  .then(char => {
+    console.log('lalala');
+    console.log(char);
+    user.characters.push(char);
+    user.save();
+    return res.status(201).json({message: "Character Added!"})
+  })
+    .catch(err => {
+        console.log(err);
+        if (err.reason === "CharacterDuplicationError") {
+            res.send(err);
+        } else {
+            res.sendStatus(500);
+        }
+  });
 });
-});
 
-// var array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
-
-// var filtered = array.filter(function(value, index, arr){
-
-//     return value > 5;
-
-// });
 
 
 //TODO: Will need to get this to feed info from redux state on front end.

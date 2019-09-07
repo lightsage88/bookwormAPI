@@ -2,6 +2,7 @@
 'use strict'
 require('dotenv').config();
 const mongoose = require('mongoose');
+var multer = require('multer');
 const express = require('express');
 const passport = require('passport');
 const morgan = require('morgan');
@@ -26,6 +27,10 @@ app.use(express.static('public'));
 passport.use(localStrategy);
 passport.use(jwtStrategy);
 app.use(morgan('common'));
+
+app.use(multer({dest:'./uploads/'}).single('photo'));
+
+
 app.use('/api/auth', authRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/characters', charactersRouter);

@@ -19,8 +19,7 @@ router.use(bodyParser.json());
 
 //Human provides a username and password to log in
 router.post('/login', localAuth, (req,res)=> {
-    console.log('hola');
-    console.log(req.body);
+
     const user = req.user.serialize()
     const authToken = createAuthToken(req.user.serialize());
     res.json({authToken, user} || err);
