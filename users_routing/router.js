@@ -210,7 +210,7 @@ router.post('/refreshStateWithToken', (req,res) => {
 
     User.findOne({"username":username})
     .then(_user => {
-        user = _user;
+        user = _user.serialize();
         res.status(201).send(user);
     })
     .catch(err => {

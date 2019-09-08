@@ -62,6 +62,12 @@ const userSchema = mongoose.Schema({
         type:String, 
         required: true
     },
+    authToken: {
+        type: String
+    },
+    loggedIn: {
+        type: Boolean
+    },
     firstName: {
         type: String, 
         required: true,
