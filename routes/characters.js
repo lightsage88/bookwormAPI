@@ -40,7 +40,8 @@ router.post('/search', (req,res)=>{
 router.post('/events', (req,res)=>{
     console.log('You are making a POST request to characters/events');
     console.log(req.body);
-    let charID = req.body.charID;
+    let charID = String(req.body.charID);
+    console.log(charID);
     let timeStamp = new Date().getTime();
     let hash = require('crypto').createHash('md5').update(timeStamp + mPrivateKey + mPublicKey).digest('hex');
     axios({

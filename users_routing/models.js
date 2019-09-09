@@ -7,7 +7,13 @@ mongoose.Promise = global.Promise;
 const crossoverEventSchema = mongoose.Schema({
     eventName: {
         type: String
+    },
+    image: { data: Buffer, contentType: String},
+    description: {
+        type: String
     }
+
+
 })
 
 

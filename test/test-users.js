@@ -1,6 +1,8 @@
 'use strict';
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const jwt = require('jsonwebtoken');
+const {JWT_SECRET, JWT_EXPIRY} = require('../config');
 
 
 const {app, runServer, closeServer} = require('../server');
@@ -188,7 +190,60 @@ describe('/api/user', function(){
           }
       });
     });
-  });
+  })
+  
+describe('/api/users/refreshStateWithToken', ()=>{
+  let usernameBank = ['Spider-Man', 'Captain America', 'Professor X'];
+  const testUserName = usernameBank[Math.floor((Math.random()*usernameBank.length))];
+  const createAuthToken = function(user) {
+    return jwt.sign({user}, JWT_SECRET, {
+        subject: String(user.username),
+        expiresIn: JWT_EXPIRY,
+        algorithm: 'HS256'
+    });
+};
+const authToken = createAuthToken(testUserName);
+  it('will be able to retrieve details of the account for refresh based on the jwt token generated at login/creation', () => {
+    User.create({
+      "username": testUserName,
+      "characters": [{
+          id: 888,
+          name: "Hero-Person"
+      }],
+      "authToken": authToken,
+      "password": "passwordpassword",
+      "firstName": "George",
+      "lastName": "Hearn"
+    })
+    var decodedToken = jwt.verify(authToken, JWT_SECRET, (err, decoded) => {
+      return decoded.user
+    });
+    expect(testUserName).to.equal(decodedToken);
+    return chai.request(app)
+    .post('/api/users/refreshStateWithToken')
+    .send({
+      token: authToken
+    })
+    .then(response => {
+      expect(response.body.username).to.equal(testUserName);
+      expect(response.body.firstName).to.equal('George');
+    })
+    .catch(err => {
+      console.error(err);
+      if (err instanceof chai.AssertionError) {
+        throw err;
+        }
+    });
+
+
+
+
+
+
+
+
+  })
+});
 
   describe('api/users/deleteCharacter', ()=> {
     it('should delete a character', ()=> {
