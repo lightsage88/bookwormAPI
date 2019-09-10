@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const {JWT_SECRET, JWT_EXPIRY} = require ("../config");
 
 
-const {User, Character} = require('./models');
+const {User, Character} = require('../models');
 
 const router = express.Router();
 
@@ -144,6 +144,7 @@ const downloadImage = (url, image_path) => {
 
 router.post('/addCharacter', (req,res)=> {
  let user;
+ console.log(req.body.characterObject);
  let imagePath = req.body.characterObject.thumbnail.path + '.' + req.body.characterObject.thumbnail.extension;
  let superPath = './uploads/marvelousImage.jpg';
   axios({
@@ -223,18 +224,18 @@ router.post('/refreshStateWithToken', (req,res) => {
 //TODO: Will need to get this to feed info from redux state on front end.
 router.post('/deleteCharacter', (req, res)=> {
     let newUserCharacters
-    User.findOne({"username": "administrator"})
+    User.findOne({"username": req.body.username})
     .then(user => {
-        let characterId = Number(req.body.characterObject.id);
+        let characterId = req.body.charID;
         newUserCharacters = (user.characters).filter(function(characterPerson) {
-            return characterPerson.id !== characterId
+            return String(characterPerson.id) !== String(characterId);
         });
-       //TODO: Stretch Goal: need to throw error if characterId to delete is not found 
-       //Though nobody can delete a character twice, so it's not super vital
+       
         user.characters = newUserCharacters;
         user.save();
         return res.status(201).json({message: "Character Removed!", characters: `${user.characters}`});
     })
+    
     .catch(err => {
         console.error(err);
     })

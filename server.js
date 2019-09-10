@@ -9,7 +9,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 const {router: usersRouter} = require('./users_routing');
 const {router: authRouter, localStrategy, jwtStrategy} = require('./auth_routing');
-const charactersRouter = require('./routes/characters');
+const {router: charactersRouter} = require('./characters_routing');
 const eventsRouter = require('./routes/events');
 
 mongoose.Promise = global.Promise;

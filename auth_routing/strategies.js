@@ -5,7 +5,7 @@ const { JWT_SECRET } = require('../config');
 //the export of 'Strategy' from passport-local will be named LocalStrategy
 const {Strategy: LocalStrategy} = require('passport-local');
 const {Strategy: JwtStrategy, ExtractJwt} = require('passport-jwt');
-const {User} = require('../users_routing/models');
+const {User} = require('../models');
 const localStrategy = new LocalStrategy((username, password, callback) => {
     let user;
 

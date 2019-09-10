@@ -134,7 +134,11 @@ describe('/api/user', function(){
         "username": "administrator",
         "characters": [{
             id: 888,
-            name: "Hero-Person"
+            name: "Hero-Person",
+            thumbnail: {
+              path: "http://www.marvelstuff.io/asdf",
+              extension: "jpeg"
+            }
         }],
         "password": "passwordpassword",
         "firstName": "George",
@@ -145,7 +149,11 @@ describe('/api/user', function(){
       .send({
         characterObject: {
           name: "Hero-Person",
-          id: 888
+          id: 888,
+          thumbnail: {
+            path: "sd",
+            extension: "jpeg"
+          }
         } 
       })
       .then((response) => {
@@ -165,7 +173,11 @@ describe('/api/user', function(){
         "username": "administrator",
         "characters": [{
             id: 888,
-            name: "Hero-Person"
+            name: "Hero-Person",
+            thumbnail: {
+              path: "http://www.marvelstuff.io/asdf",
+              extension: "jpeg"
+            }
         }],
         "password": "passwordpassword",
         "firstName": "George",
@@ -176,7 +188,11 @@ describe('/api/user', function(){
       .send({
         characterObject: {
           name: "Villain-Person",
-          id: 666
+          id: 666,
+          thumbnail: {
+            path: "sds",
+            extension: "jpeg"
+          }
         } 
       })
       .then((response) => {
@@ -208,7 +224,11 @@ const authToken = createAuthToken(testUserName);
       "username": testUserName,
       "characters": [{
           id: 888,
-          name: "Hero-Person"
+          name: "Hero-Person",
+          thumbnail: {
+            path: "sd",
+            extension: "jpeg"
+          }
       }],
       "authToken": authToken,
       "password": "passwordpassword",
@@ -247,6 +267,7 @@ const authToken = createAuthToken(testUserName);
 
   describe('api/users/deleteCharacter', ()=> {
     it('should delete a character', ()=> {
+      
       let newUserRecord;
       User.create({
         "username": "administrator",
@@ -271,23 +292,22 @@ const authToken = createAuthToken(testUserName);
       return chai.request(app)
       .post('/api/users/deleteCharacter')
       .send({
-        characterObject: {
-          name: "Sweeney Todd",
-          id: 888
-        }
+        charID: "888",
+        username: "administrator"
       })
-      .then((response) => {
+      .then(response => {
         console.log(response.body);
         expect(response.body.characters).to.not.include("id: 888");
         expect(response.body.message).to.equal('Character Removed!');
         expect(response.status).to.equal(201);
-        
       })
       .catch(err => {
+      
         if(err instanceof chai.AssertionError) {
           throw err;
         }
       })
     })
   })
+ 
 });
