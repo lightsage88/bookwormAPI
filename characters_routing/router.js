@@ -4,7 +4,7 @@ const crypto = require('crypto');
 
 const { mPublicKey, mPrivateKey, mAPI } = require('../config');
 
-const {User} = require('../models');
+const {User, Event} = require('../models');
 
 
 const router = express.Router();
@@ -67,14 +67,10 @@ router.post('/events', (req,res)=>{
         //Need to find the username for the account that initiated this call
         //Need to find the character for which the call was initiated
         //Turn the response.data.data.results into what the character's events array is and save it to the User.
-        return response.data.data.results;
+        // return response.data.data.results;
 
         // res.json(response.data.data.results);
-    })
-    .then(data => {
-        eventResults = data;
-        console.log('here are the results');
-    console.log(eventResults);
+        eventResults = response.data.data.results
     })
     .then(()=>{
         return User.findOne({"username": username})
@@ -91,6 +87,7 @@ router.post('/events', (req,res)=>{
         let revisedCharacter = user.characters.find((element) => {
             return String(element.id) === String(charID);
         });
+        
         
         revisedCharacter.events = eventResults;
         console.log(revisedCharacter);
@@ -112,4 +109,4 @@ router.post('/events', (req,res)=>{
 
 
 
-module.exports = {router};
+module.exports = {router}; 

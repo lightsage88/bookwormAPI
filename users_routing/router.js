@@ -239,6 +239,14 @@ router.post('/deleteCharacter', (req, res)=> {
     .catch(err => {
         console.error(err);
     })
+});
+
+router.post('/deleteUser', (req,res) => {
+    User.deleteOne({"username": req.body.username})
+    .then(response => {
+        console.log(response);
+        return res.status(202).json({message: "Account Deleted"});
+    });
 })
 
 

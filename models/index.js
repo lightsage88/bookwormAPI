@@ -1,14 +1,19 @@
 "use strict"
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
+const axios = require('axios');
+const fs = require('fs');
 
 mongoose.Promise = global.Promise;
 
-const crossoverEventSchema = mongoose.Schema({
-    eventName: {
+const eventSchema = mongoose.Schema({
+    title: {
         type: String
     },
-    image: { data: Buffer, contentType: String},
+    // thumbnail: { data: Buffer, contentType: String},
+    thumbnail: {
+        type: Object
+    },
     description: {
         type: String
     }
@@ -41,9 +46,7 @@ const characterSchema = mongoose.Schema({
     description: {
         type:String
     },
-    events: {
-      type: Object  
-    },
+    events: [eventSchema],
     thumbnail: {
         type: Object
         //img file??
@@ -85,7 +88,6 @@ const userSchema = mongoose.Schema({
         default: ''
     },
     characters: [characterSchema],
-    crossoverEvents: [crossoverEventSchema],
     books: [bookSchema]
 
 });
@@ -126,9 +128,25 @@ userSchema.virtual("mostRecentCharacter").get(function(){
     return characterObject;
 });
 
+// eventSchema.virtual("image").get(function(){
+//     axios({
+//         url: `${this.thumbnail.path}.${this.thumbnail.extension}`,
+//         responseType: 'stream',
+//     })
+//     .then(response => {
+//         return new Promise((resolve, reject) => {
+//             let eventPicture = response.data.pipe(fs.createWriteStream('./uploads/eventImage.jpg'));
+//             eventImage.on('error', reject).on('close', resolve);
+//         })
+//     })
+//     .catch(err => {
+//         console.error(err);
+//     })
+// })
+
 const User = mongoose.model("User", userSchema);
 const Book = mongoose.model("Book", bookSchema);
 const Character = mongoose.model("Character", characterSchema);
-
-module.exports = { User, Book, Character };
+const Event = mongoose.model('Event', eventSchema);
+module.exports = { User, Book, Character, Event };
 
