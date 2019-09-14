@@ -50,7 +50,7 @@ router.post('/events', (req,res)=>{
     let timeStamp = new Date().getTime();
     let hash = require('crypto').createHash('md5').update(timeStamp + mPrivateKey + mPublicKey).digest('hex');
     axios({
-        url: `${mAPI}/characters/${charID}/events`,
+        url: `${mAPI}/characters/${charID}/series`,
         method: 'GET',
         params: {
             "apikey": `${mPublicKey}`,
