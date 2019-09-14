@@ -55,7 +55,8 @@ router.post('/events', (req,res)=>{
         params: {
             "apikey": `${mPublicKey}`,
             "ts": `${timeStamp}`,
-            "hash": `${hash}`
+            "hash": `${hash}`,
+            "orderBy": '-startYear'
         },
         headers: {
             "accept": "application/json"
