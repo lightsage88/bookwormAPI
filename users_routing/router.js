@@ -1,5 +1,6 @@
 'use strict';
 const express = require('express');
+const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const axios = require('axios');
@@ -141,6 +142,65 @@ const downloadImage = (url, image_path) => {
         })
     )
 }
+
+
+
+
+router.post('/changePassword', (req,res) => {
+    let user;
+    let newHash;
+    const hashIt = (pwString) => {
+        console.log(pwString);
+        return bcrypt.hash(pwString, 10);
+    }
+    const compare = (pwString, hash) => {
+        return bcrypt.compare(pwString, hash)
+    }
+    let newPW = req.body.newPW;
+    let result;
+    if(newPW.trim() !== newPW) {
+        return res.send({
+            code: 422,
+            reason: 'ValidationError',
+            message: "Cannot start or end with a whitespace",
+        });
+    }
+
+    return User.findOne({username: req.body.username})
+    .then(_user => {
+        user = _user;
+        return user.password;
+    })
+    .then(hash => {
+        result = compare(req.body.oldPW, hash);
+        if(!result) {
+            return res.send({
+                code: 422,
+                reason: 'AuthenticationError',
+                message: "Game recognize game, and right now you looking pretty unfamiliar"
+            });
+        } else {
+            console.log('yippee');
+            newHash = hashIt(newPW);
+            
+            return newHash;
+            
+        }
+        return newHash
+    })
+    .then(newHash => {
+        user.password = newHash;
+        user.save();
+        return res.send({
+            code:201
+        });
+    })
+    .catch(err => {
+        console.error(err);
+    })
+
+})
+
 
 router.post('/addCharacter', (req,res)=> {
  let user;
