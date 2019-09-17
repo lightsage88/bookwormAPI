@@ -15,8 +15,7 @@ const router = express.Router();
 const jsonParser = bodyParser.json();
 router.use(express.json());
 
-router.post('/', jsonParser, (req,res)=>{
-    console.log('delete me');
+router.post('/signup', jsonParser, (req,res)=>{
     const requiredFields = ['username', 'password'];
     const missingField = requiredFields.find(field => !(field in req.body));
 
@@ -218,13 +217,14 @@ router.post('/addCharacter', (req,res)=> {
       })
   })
   .then(()=> {
-    return User.findOne({  "username": "administrator"})
+    return User.findOne({  "username": req.body.username})
   })
   .then(_user => {
     user = _user;
     let characterId = req.body.characterObject.id;
-    for(let i = 0; i < user.characters.length; i++) {
+    for(let i = 0; i < user.characters.length - 1; i++) {
       if(characterId == user.characters[i].id) {
+        
         return Promise.reject({
           code: 422,
           message: 'You already have this character!',
