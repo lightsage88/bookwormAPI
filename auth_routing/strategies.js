@@ -1,6 +1,6 @@
 'use strict';
 
-const { JWT_SECRET } = require('../config');
+let { JWT_SECRET } = require('../config');
 
 //the export of 'Strategy' from passport-local will be named LocalStrategy
 const {Strategy: LocalStrategy} = require('passport-local');
