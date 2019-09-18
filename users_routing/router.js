@@ -233,10 +233,10 @@ router.post('/addCharacter', (req,res)=> {
       }
     }
     return Character.create({
-        description: req.body.characterObject.description || 'bocho',
-        events: req.body.characterObject.events || 'lopo',
-        thumbnail: req.body.characterObject.thumbnail || 'goso',
-        name: req.body.characterObject.name || 'John Doe',
+        description: req.body.characterObject.description || null,
+        events: req.body.characterObject.events || null,
+        thumbnail: req.body.characterObject.thumbnail || null,
+        name: req.body.characterObject.name || null,
         id: req.body.characterObject.id,
         "image.data": fs.readFileSync(superPath),
         "image.contentType": 'image/jpeg'
