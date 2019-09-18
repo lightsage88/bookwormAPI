@@ -41,11 +41,11 @@ describe('/api/user', function(){
         return User.deleteOne({});
     });
 
-    describe('api/users', function(){
+    describe('api/users/signup', function(){
       describe('POST', function(){
         it('Should reject users with missing username', function(){
           return chai.request(app)
-          .post('/api/users')
+          .post('/api/users/signup')
           .send({
             password,
             firstName,
@@ -68,7 +68,7 @@ describe('/api/user', function(){
 
       it('Should reject users with a missing password', ()=>{
         return chai.request(app)
-          .post('/api/users')
+          .post('/api/users/signup')
           .send({
             firstName,
             lastName,
@@ -90,7 +90,7 @@ describe('/api/user', function(){
       it('Should reject users with a non-string for their firstName', ()=>{
         console.log('fuckhead');
         return chai.request(app)
-        .post('/api/users')
+        .post('/api/users/signup')
         .send({
           firstName: 666,
           lastName,
@@ -109,7 +109,7 @@ describe('/api/user', function(){
 
       it('Should reject users with a non-string for their lastName', ()=>{
         return chai.request(app)
-        .post('/api/users')
+        .post('/api/users/signup')
         .send({
           firstName,
           lastName: 777,
