@@ -1,5 +1,5 @@
 'use strict';
-
+require('dotenv').config();
 let { JWT_SECRET } = require('../config');
 
 //the export of 'Strategy' from passport-local will be named LocalStrategy
