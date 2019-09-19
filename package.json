@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node server.js",
     "test": "mocha --timeout 5000 --exit"
   },
   "author": "",
