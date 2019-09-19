@@ -156,6 +156,6 @@ if(require.main === module) {
 
 module.exports = {app, runServer, closeServer};
 
-// app.listen((process.env.PORT || 8000), () => {
-//     console.log(`we are listening on ${process.env.PORT || 8000}`)
-// }); 
+app.listen((process.env.PORT || 8000), () => {
+    console.log(`we are listening on ${process.env.PORT || 8000}`)
+}); 
