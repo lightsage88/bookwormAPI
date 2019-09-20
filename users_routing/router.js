@@ -263,16 +263,16 @@ router.post('/refreshStateWithToken', (req,res) => {
     console.log(req.body);
     let token = req.body.token;
     let username;
-    let user;
+    let userVar;
     var decodedToken = jwt.verify(token, JWT_SECRET, (err, decoded) =>{
         console.log(decoded.user);
         username= decoded.user;
     } );
 
     User.findOne({"username":username})
-    .then(_user => {
-        user = _user.serialize();
-        res.status(201).send(user);
+    .then(user => {
+        userVar = user.serialize();
+        res.status(201).send(userVar);
     })
     .catch(err => {
         console.error(err);

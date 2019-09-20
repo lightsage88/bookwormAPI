@@ -43,73 +43,7 @@ const logErrors =(err, req, res, next) =>{
 
 app.use(logErrors);
 
-    //////////////TEMPORARY DATA////////////
 
-const characters = [
-    {
-        characterName: 'Spider-Man',
-        blipSurvivor: false,
-        id: 0
-    },
-    {
-        characterName: 'Iron Man',
-        blipSurvivor: true,
-        id: 1
-    },
-    {
-        characterName: 'Captain America',
-        blipSurvivor: true,
-        id:2
-    },
-    {
-        characterName: 'Black Panther',
-        blipSurvivor: false,
-        id: 3
-    },
-    {
-        characterName: 'Nick Fury',
-        blipSurvivor: false,
-        id: 4
-    },
-    {
-        characterName: 'Thor',
-        blipSurvivor: true,
-        id:5
-    }
-];
-
-
-app.get('/', (req, res)=>{
-   
-    res.send('a okay, Ness')
-    
-});
-
-app.get('/jsonResponse', (req,res) => {
-    console.log(require('crypto').createHash('md5').update(Date.now() + mPrivateKey + mPublicKey).digest('hex'))
-    console.log('StreetFighter');
-    res.json({upcomingChampion: "Ryu"})
-});
-
-
-
-app.get('/:id', (req,res)=>{
-    const {id} = req.params;
-    let requestedData;
-
-    characters.forEach(hero =>{
-        if(hero.id == id) {
-           requestedData = hero
-        }
-    });
-   
-    res.json(requestedData);
-})
-
-app.post("/", (req,res) => {
-    res.status(201)
-    .send("a okay Snake")
-})
 
 let server;
 
@@ -156,6 +90,6 @@ if(require.main === module) {
 
 module.exports = {app, runServer, closeServer};
 
-app.listen((process.env.PORT || 8000), () => {
-    console.log(`we are listening on ${process.env.PORT || 8000}`)
-}); 
+// app.listen((process.env.PORT || 8000), () => {
+//     console.log(`we are listening on ${process.env.PORT || 8000}`)
+// }); 
