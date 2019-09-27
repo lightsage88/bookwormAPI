@@ -15,6 +15,32 @@ const router = express.Router();
 const jsonParser = bodyParser.json();
 router.use(express.json());
 
+
+router.post('/usernameCheck', jsonParser, (req, res)=>{
+    let usernameCandidate = req.body.usernameCandidate
+    console.log(usernameCandidate);
+    return User.find({username: usernameCandidate})
+    .countDocuments()
+        .then(count => {
+            if(count > 0) {
+                console.log('already there');
+                return res.status(201).send({
+                    code: 422,
+                    reason: 'ValidationError',
+                    message: 'Username already taken',
+                    location: 'username'
+                });
+            } else {
+                return res.status(201).send({
+                    code: 201
+                });
+            }
+        })
+        .catch(err => {
+            console.error(err);
+        })
+})
+
 router.post('/signup', jsonParser, (req,res)=>{
     const requiredFields = ['username', 'password'];
     const missingField = requiredFields.find(field => !(field in req.body));
