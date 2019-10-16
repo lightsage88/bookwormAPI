@@ -145,12 +145,7 @@ router.post('/signup', jsonParser, (req,res)=>{
         });
 });
 
-//TODO : DELETE THE METHOD IMMEDIATELY BELOW BEFORE DEPLOYING!!
-router.get('/', (req, res)=> {
-    return User.find()
-    .then(users => res.json(users.map(user => user.serialize())))
-    .catch(err => res.status(500).json({message: 'Internal Server Error'}));
-});
+
 
 const downloadImage = (url, image_path) => {
     console.log('johnny bravo, yahaha');
